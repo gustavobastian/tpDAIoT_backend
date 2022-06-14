@@ -102,6 +102,8 @@ const register = (router) => {
         if (listado) return res.send(listado);
     });
   
+  //get dispositivos
+  router.get('/dispositivos/status/:id', async function (req, res) {
     //get dispositivos
   router.get('/dispositivos', async function (req, res) {
     //    console.log("recibo get")
@@ -109,7 +111,7 @@ const register = (router) => {
         if (!listado) return res.json({ data: null, error: 'No hay datos en la Base de Datos.' });
         if (listado) return res.send(listado);
     });
-  
+    });  
 
   return router;
 };
