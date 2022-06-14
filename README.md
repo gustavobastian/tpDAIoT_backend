@@ -3,9 +3,10 @@ Repositorio con el backend de ejemplo para desplegar una aplicación IoT utiliza
 
 Pasos a seguir luego de clonar el repositorio en nuestro equipo de desarrollo:
 1) Crear una copia de las variables de entorno con el comando: cp .env.example .env
-2) Instalar las dependencias ejecutando el comando: npm install 
-3) En caso de utilizar una base de datos mongo local... estar corriendo el servicio (ejecutar mongod en una consola separada).
-4) Ejecutar la aplicación con el comando: npm run dev
+2) Instalar las dependencias ejecutando el comando: npm install
+3) En la carpeta other-files se encuentra la configuración utilizada para el servidor mosquitto con TLS.. es necesario agregar los certificados en la carpeta /etc/mosquitto/certs
+4) En caso de utilizar una base de datos mongo local... estar corriendo el servicio (ejecutar mongod en una consola separada).
+5) Ejecutar la aplicación con el comando: npm run dev
 
 # Descripcion del backend:
 ## Base de datos:
