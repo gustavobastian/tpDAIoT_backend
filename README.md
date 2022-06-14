@@ -25,5 +25,5 @@ Se crean 2 esquemas : dispositivos y logs
 * "/dispositivos": entrega un json con el listado de la informacion de todos los nodos de la base de datos.
 * "/dispositivos/:id": entrega un json con la informacion del dispositivo seleccionado.
 * "/logs/:id": consulta todas las mediciones del dispositivo a la base de datos.
-* "/lastlog/:id": obtiene la ultima medicion del dispositivo.
+* "/lastlogs/:id": obtiene la ultima medicion del dispositivo.
 
