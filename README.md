@@ -1,19 +1,23 @@
 # 2022-Daiot-Mongo-Node-MQTT
+
 Repositorio con el backend de ejemplo para desplegar una aplicación IoT utilizando Mongo+Node+MQTT
 
 Pasos a seguir luego de clonar el repositorio en nuestro equipo de desarrollo:
+
 1) Crear una copia de las variables de entorno con el comando: cp .env.example .env
 2) Instalar las dependencias ejecutando el comando: npm install
 3) En la carpeta other-files se encuentra la configuración utilizada para el servidor mosquitto con TLS.. es necesario agregar los certificados en la carpeta /etc/mosquitto/certs
 4) En caso de utilizar una base de datos mongo local... estar corriendo el servicio (ejecutar mongod en una consola separada).
 5) Ejecutar la aplicación con el comando: npm run dev
 
-# Descripcion del backend:
-## Base de datos:
+## Descripcion del backend
+
+## Base de datos
+
 Se selecciona el motor de bases de datos MongoDb.
 Se crean 2 esquemas : dispositivos y logs
 
-## Endpoints:
+## Endpoints
 
 ### POST endpoints
 
@@ -26,4 +30,3 @@ Se crean 2 esquemas : dispositivos y logs
 * "/dispositivos/:id": entrega un json con la informacion del dispositivo seleccionado.
 * "/logs/:id": consulta todas las mediciones del dispositivo a la base de datos.
 * "/lastlogs/:id": obtiene la ultima medicion del dispositivo.
-
