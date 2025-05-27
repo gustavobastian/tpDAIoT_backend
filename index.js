@@ -5,7 +5,7 @@ const errorHandler = require("errorhandler");
 const helmet = require("helmet");
 const Router = require("express-promise-router");
 const config = require("./config");
-var cors = require("cors");
+let cors = require("cors");
 
 const API_ENV = config.services.API;
 const registerRoutes = require("./routers");
@@ -25,7 +25,7 @@ require('./storage/database/mongo');
   methods: ["GET", "POST", "OPTIONS"],
 };*/
 //comment for production
-var corsOptions = {
+let corsOptions = {
   origin: ["192.168.1.100"],
   optionsSuccessStatus: 200,
   methods: ["GET", "POST", "OPTIONS"],

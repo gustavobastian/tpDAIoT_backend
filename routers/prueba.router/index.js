@@ -53,9 +53,7 @@ clientMqtt.on("connect", async function () {
                         }).catch(err => {
                             console.log("ERROR UPDATING");
                         });
-
-                }    
-                return;
+                }                    
             }
         else{ 
             const jason = JSON.parse(mensaje);
@@ -67,7 +65,8 @@ clientMqtt.on("connect", async function () {
             /*     */
 
                 }            
-                return;}
+                return;
+            }
             else if(mensaje.length<5){console.log("mensaje parametros");return}
             else{
             // console.log("size:"+mensaje.length);
@@ -78,8 +77,7 @@ clientMqtt.on("connect", async function () {
             
             if (buscarDispositivo) { // Si el dispositivo existe agrego un log             
                 let eltime = new Date().getTime();
-                let elnodo = buscarDispositivo.dispositivoId;
-                
+                let elnodo = buscarDispositivo.dispositivoId;                
                 const id = await logs.find().sort({ "logId": -1 }).limit(1); // para obtener el maximo
                 
                 const elLog = new logs({
@@ -93,7 +91,7 @@ clientMqtt.on("connect", async function () {
                 });
                 
                 try {
-                    const savedLog = await elLog.save();
+                    await elLog.save();
                     console.log("REGISTRO DE LOG AGREGADO CORRECTAMENTE.");
                 } catch (error) {
                     console.log("ERROR UPDATING:"+ error);
