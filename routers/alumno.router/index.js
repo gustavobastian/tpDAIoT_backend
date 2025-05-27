@@ -11,12 +11,7 @@ const register = (router) => {
   //body with json data : {"Led1":0,"Led2":0}
 
   router.post("/leds/:id", async function(req, res){
-    deviceId=req.params.id;
-   /* console.log("########################################################################");
-    console.log(req.body);
-    console.log(deviceId);
-    console.log("########################################################################");  
-  */
+    let deviceId=req.params.id;   
     const payload = JSON.stringify(req.body);
     clientMqtt.publish("/topic/"+deviceId+"/parametros", payload, options, (error) => {
     if (error) {
@@ -30,12 +25,8 @@ const register = (router) => {
   //body with json data : {"nombre":"nombre","ubicacion":"ubicacion"}
 
   router.post("/dispositivos/:id", async function(req, res){
-    deviceId=req.params.id;
-   /* console.log("########################################################################");
-    console.log(req.body);
-    console.log(deviceId);
-    console.log("########################################################################");  
-  */
+    let deviceId=req.params.id;
+
     const payload = JSON.stringify(req.body);
     clientMqtt.publish("/topic/"+deviceId+"/parametros", payload, options, (error) => {
     if (error) {
@@ -77,8 +68,7 @@ const register = (router) => {
 	
   //sorted from late to first    
     const listado = await logs.find({ "nodoId": req.params.id }).sort({ts:-1});
-    console.log("aqui")    
-  //  console.log(listado);
+    console.log("aqui")      
     if (!listado) return res.json({ data: null, error: 'No hay datos en la Base de Datos.' });
     if (listado) return res.send( listado);
   });
@@ -88,8 +78,7 @@ const register = (router) => {
 	
     //sorted from late to first    
       const listado = await logs.find({ "nodoId": req.params.id }).sort({ts:-1}).limit(1);
-      console.log("aqui")    
-    //  console.log(listado);
+      console.log("aqui")        
       if (!listado) return res.json({ data: null, error: 'No hay datos en la Base de Datos.' });
       if (listado) return res.send( listado);
     });
