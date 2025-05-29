@@ -7,155 +7,162 @@ let arrayTopicsListen = ["#"];
 let arrayTopicsServer = ["/casa/", "/exterior/"];
 
 
-clientMqtt.on("connect", async function () {
-    //BUSCO TODOS LOS NODOS NO REPETIDOS
-    const buscarAllnodos = await dispositivo.find().distinct("nodoId");
-    for (let nodo in buscarAllnodos) {
-        arrayTopicsListen.push(buscarAllnodos[nodo].topic);
-        arrayTopicsServer.push(buscarAllnodos[nodo].topicSrvResponse);
-    }
+clientMqtt.on("connect", () => {
+    (
+        async function () {
+            //BUSCO TODOS LOS NODOS NO REPETIDOS
+            const buscarAllnodos = await dispositivo.find().distinct("nodoId");
+            for (let nodo in buscarAllnodos) {
+                arrayTopicsListen.push(buscarAllnodos[nodo].topic);
+                arrayTopicsServer.push(buscarAllnodos[nodo].topicSrvResponse);
+            }
     
-    clientMqtt.subscribe(arrayTopicsListen, options, () => {
-        console.log("Subscribed to topics: ");
-        console.log(arrayTopicsListen);
-    });    
-    clientMqtt.on("message", async (topic, payload) => {
-        console.log("[MQTT] Mensaje recibido: " + topic + ": " + payload.toString());
-        let mensaje = payload.toString();
-        let arr=topic.split("/");
-        console.log("nodo:"+arr[2]);
-       
-        if(arr[3]==="status"){ 
-                //need to alter status in database
-                
-                console.log(mensaje.length);
-                if(mensaje.length>19){
-                 console.log("status offline");
-                await dispositivo.findOneAndUpdate(
-                    { "dispositivoId": arr[2]},
-                    {
-                        status: "Offline",
-                        
-                    }).then(book => {
-                        console.log("DISPOSITIVO ACTUALIZADO.");
-                    }).catch(err => {
-                        console.log("ERROR UPDATING");
-                    });
-                    }
-                else{
-                    await dispositivo.findOneAndUpdate(
-                        { "dispositivoId": arr[2]},
-                        {
-                            status: "Online",
-                            
-                        }).then(book => {
-                            console.log("DISPOSITIVO ACTUALIZADO.");
-                        }).catch(err => {
-                            console.log("ERROR UPDATING");
-                        });
-                }                    
-            }
-        else{ 
-            const jason = JSON.parse(mensaje);
-            if((jason.status=="Online")||(jason.status=="Offline")){
-                console.log("mensaje status");
-                if(json.status=="Offline"){
-                    console.log("change status in database");
-                    console.log(topic);
-                }            
-                return;
-            }
-            else if(mensaje.length<5){console.log("mensaje parametros");return}
-            else{            
-            // busco de nombre de dispositivo en la DB
-            const buscarDispositivo = await dispositivo.findOne({            
-                dispositivoId: jason.dispositivoId,
+            clientMqtt.subscribe(arrayTopicsListen, options, () => {
+                console.log("Subscribed to topics: ");
+                console.log(arrayTopicsListen);
             });
-            
-            if (buscarDispositivo) { // Si el dispositivo existe agrego un log             
-                let eltime = new Date().getTime();
+            clientMqtt.on("message", () => {
+                (
+                    async (topic, payload) => {
+                        console.log("[MQTT] Mensaje recibido: " + topic + ": " + payload.toString());
+                        let mensaje = payload.toString();
+                        let arr = topic.split("/");
+                        console.log("nodo:" + arr[2]);
+        
+                        if (arr[3] === "status") {
+                            //need to alter status in database
+                    
+                            console.log(mensaje.length);
+                            if (mensaje.length > 19) {
+                                console.log("status offline");
+                                await dispositivo.findOneAndUpdate(
+                                    { "dispositivoId": arr[2] },
+                                    {
+                                        status: "Offline",
+                            
+                                    }).then(book => {
+                                        console.log("DISPOSITIVO ACTUALIZADO.");
+                                    }).catch(err => {
+                                        console.log("ERROR UPDATING");
+                                    });
+                            }
+                            else {
+                                await dispositivo.findOneAndUpdate(
+                                    { "dispositivoId": arr[2] },
+                                    {
+                                        status: "Online",
+                                
+                                    }).then(book => {
+                                        console.log("DISPOSITIVO ACTUALIZADO.");
+                                    }).catch(err => {
+                                        console.log("ERROR UPDATING");
+                                    });
+                            }
+                        }
+                        else {
+                            const jason = JSON.parse(mensaje);
+                            if ((jason.status == "Online") || (jason.status == "Offline")) {
+                                console.log("mensaje status");
+                                if (json.status == "Offline") {
+                                    console.log("change status in database");
+                                    console.log(topic);
+                                }
+                                return;
+                            }
+                            else if (mensaje.length < 5) { console.log("mensaje parametros"); return }
+                            else {
+                                // busco de nombre de dispositivo en la DB
+                                const buscarDispositivo = await dispositivo.findOne({
+                                    dispositivoId: jason.dispositivoId,
+                                });
                 
-                const id = await logs.find().sort({ "logId": -1 }).limit(1); // para obtener el maximo
-                
-                const elLog = new logs({
-                    logId: (id?.find(x => x?.logId)?.logId) || 0 + 1,
-                    ts: eltime,
-                    eluz1: buscarDispositivo.luz1,
-                    eluz2: buscarDispositivo.luz2,
-                    etemperatura: buscarDispositivo.temperatura,
-                    ehumedad: buscarDispositivo.humedad,
-                    nodoId: buscarDispositivo.dispositivoId
-                });
-                
-                try {
-                    await elLog.save();
-                    console.log("REGISTRO DE LOG AGREGADO CORRECTAMENTE.");
-                } catch (error) {
-                    console.log("ERROR UPDATING:"+ error);
-                }
-                //ACTUALIZO Dispositivo EN MONGO
-                await dispositivo.findOneAndUpdate(
-                    { dispositivoId: buscarDispositivo.dispositivoId },
-                    {
-                        luz1: jason.luz1,
-                        luz2: jason.luz2,
-                        temperatura: jason.temperatura,
-                        humedad: jason.humedad,                    
-                    }).then(book => {
-                        console.log("DISPOSITIVO ACTUALIZADO.");
-                    }).catch(err => {
-                        console.log("ERROR UPDATING");
-                    });
-            } else { // Si no existe creo un nuevo dispositivo
-                console.log("Nodo no registrarlo, procedo a crearlo.");
-                console.log("Topic recibido: " + topic);
-                console.log("Datos del nodo: ");
-                console.log(jason);
-                // agrego un nuevo nodo en mongo
-                const nuevodisp = new dispositivo({
-                    dispositivoId: jason.dispositivoId,
-                    nombre: jason.nombre,
-                    ubicacion: jason.ubicacion,
-                    luz1: jason.luz1,
-                    luz2: jason.luz2,
-                    temperatura: jason.temperatura,
-                    humedad: jason.humedad,
-                    topic: topic,
-                    topicSrvResponse: topic,
-                    status:"Online",
-                });
-                
-                try {
-                    await nuevodisp.save();
-                    console.log("NUEVO NODO AGREGADO CORRECTAMENTE.");
-                } catch (error) {
-                    console.log("ERROR UPDATING :" + error);
-                }
-                // Agrego el log del nodo creado
-                let eltime = new Date().getTime();
+                                if (buscarDispositivo) { // Si el dispositivo existe agrego un log             
+                                    let eltime = new Date().getTime();
+                    
+                                    const id = await logs.find().sort({ "logId": -1 }).limit(1); // para obtener el maximo
+                    
+                                    const elLog = new logs({
+                                        logId: (id?.find(x => x?.logId)?.logId) || 0 + 1,
+                                        ts: eltime,
+                                        eluz1: buscarDispositivo.luz1,
+                                        eluz2: buscarDispositivo.luz2,
+                                        etemperatura: buscarDispositivo.temperatura,
+                                        ehumedad: buscarDispositivo.humedad,
+                                        nodoId: buscarDispositivo.dispositivoId
+                                    });
+                    
+                                    try {
+                                        await elLog.save();
+                                        console.log("REGISTRO DE LOG AGREGADO CORRECTAMENTE.");
+                                    } catch (error) {
+                                        console.log("ERROR UPDATING:" + error);
+                                    }
+                                    //ACTUALIZO Dispositivo EN MONGO
+                                    await dispositivo.findOneAndUpdate(
+                                        { dispositivoId: buscarDispositivo.dispositivoId },
+                                        {
+                                            luz1: jason.luz1,
+                                            luz2: jason.luz2,
+                                            temperatura: jason.temperatura,
+                                            humedad: jason.humedad,
+                                        }).then(book => {
+                                            console.log("DISPOSITIVO ACTUALIZADO.");
+                                        }).catch(err => {
+                                            console.log("ERROR UPDATING");
+                                        });
+                                } else { // Si no existe creo un nuevo dispositivo
+                                    console.log("Nodo no registrarlo, procedo a crearlo.");
+                                    console.log("Topic recibido: " + topic);
+                                    console.log("Datos del nodo: ");
+                                    console.log(jason);
+                                    // agrego un nuevo nodo en mongo
+                                    const nuevodisp = new dispositivo({
+                                        dispositivoId: jason.dispositivoId,
+                                        nombre: jason.nombre,
+                                        ubicacion: jason.ubicacion,
+                                        luz1: jason.luz1,
+                                        luz2: jason.luz2,
+                                        temperatura: jason.temperatura,
+                                        humedad: jason.humedad,
+                                        topic: topic,
+                                        topicSrvResponse: topic,
+                                        status: "Online",
+                                    });
+                    
+                                    try {
+                                        await nuevodisp.save();
+                                        console.log("NUEVO NODO AGREGADO CORRECTAMENTE.");
+                                    } catch (error) {
+                                        console.log("ERROR UPDATING :" + error);
+                                    }
+                                    // Agrego el log del nodo creado
+                                    let eltime = new Date().getTime();
 
-                const id = await logs.find().sort({ "logId": -1 }).limit(1); // para obtener el maximo
-                //console.log("[LOG] id: " + id);
-                const elLog = new logs({
-                    logId: (id?.find(x => x?.logId)?.logId) || 0 + 1,
-                    ts: eltime,
-                    eluz1: jason.luz1,
-                    eluz2: jason.luz2,
-                    etemperatura: jason.temperatura,
-                    ehumedad: jason.humedad,
-                    nodoId: jason.dispositivoId
-                });
+                                    const id = await logs.find().sort({ "logId": -1 }).limit(1); // para obtener el maximo
+                                    //console.log("[LOG] id: " + id);
+                                    const elLog = new logs({
+                                        logId: (id?.find(x => x?.logId)?.logId) || 0 + 1,
+                                        ts: eltime,
+                                        eluz1: jason.luz1,
+                                        eluz2: jason.luz2,
+                                        etemperatura: jason.temperatura,
+                                        ehumedad: jason.humedad,
+                                        nodoId: jason.dispositivoId
+                                    });
+                
+                                    try {
+                                        await elLog.save();
+                                        console.log("REGISTRO DE LOG AGREGADO CORRECTAMENTE.");
+                                    } catch (error) {
+                                        console.log("ERROR UPDATING: " + error);
+                                    }
+                                }
+                            }
+                        }
+                    })
             
-                try {
-                    await elLog.save();
-                    console.log("REGISTRO DE LOG AGREGADO CORRECTAMENTE.");
-                } catch (error) {
-                    console.log("ERROR UPDATING: " + error);
-                }
-            }
-        }
-        }
-    })
+            })();    
+    })();    
 
 })
 

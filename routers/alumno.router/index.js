@@ -35,9 +35,6 @@ const register = (router) => {
     })    
 
     //alter database
-
-    //const listado = await dispositivo.findOne({ "dispositivoId": req.params.id });
-    //console.log(listado);
        //ACTUALIZO Dispositivo EN MONGO
        await dispositivo.findOneAndUpdate(
         { "dispositivoId": req.params.id },
