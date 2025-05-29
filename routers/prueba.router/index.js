@@ -62,14 +62,11 @@ clientMqtt.on("connect", async function () {
                 if(json.status=="Offline"){
                     console.log("change status in database");
                     console.log(topic);
-            /*     */
-
                 }            
                 return;
             }
             else if(mensaje.length<5){console.log("mensaje parametros");return}
-            else{
-            // console.log("size:"+mensaje.length);
+            else{            
             // busco de nombre de dispositivo en la DB
             const buscarDispositivo = await dispositivo.findOne({            
                 dispositivoId: jason.dispositivoId,
@@ -77,7 +74,7 @@ clientMqtt.on("connect", async function () {
             
             if (buscarDispositivo) { // Si el dispositivo existe agrego un log             
                 let eltime = new Date().getTime();
-                let elnodo = buscarDispositivo.dispositivoId;                
+                
                 const id = await logs.find().sort({ "logId": -1 }).limit(1); // para obtener el maximo
                 
                 const elLog = new logs({
@@ -136,8 +133,7 @@ clientMqtt.on("connect", async function () {
                 }
                 // Agrego el log del nodo creado
                 let eltime = new Date().getTime();
-                let elnodo = jason.dispositivoId;
-            
+
                 const id = await logs.find().sort({ "logId": -1 }).limit(1); // para obtener el maximo
                 //console.log("[LOG] id: " + id);
                 const elLog = new logs({

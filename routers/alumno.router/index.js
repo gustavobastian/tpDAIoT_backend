@@ -75,7 +75,6 @@ const register = (router) => {
 
   //get  last individual logs from the db
   router.get("/lastlogs/:id", async function(req, res){
-	
     //sorted from late to first    
       const listado = await logs.find({ "nodoId": req.params.id }).sort({ts:-1}).limit(1);
       console.log("aqui")        

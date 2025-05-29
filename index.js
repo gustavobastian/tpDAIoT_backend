@@ -18,12 +18,6 @@ require('./storage/database/mongo');
 
 //me conecto a la db.
 
-// CORS: only from the local server (uncomment for production)
-/*var corsOptions = {
-  origin: ["https://daiot.com.ar"],
-  optionsSuccessStatus: 200,
-  methods: ["GET", "POST", "OPTIONS"],
-};*/
 //comment for production
 let corsOptions = {
   origin: ["192.168.1.100"],

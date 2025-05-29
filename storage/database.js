@@ -21,7 +21,9 @@ class Mysql {
         const query = `DELETE FROM ${username}${table} WHERE id=${id}`;
         return query;
     }
-    update() { }
+    update() { 
+        console.log("updating database")
+    }
 }
 
 
